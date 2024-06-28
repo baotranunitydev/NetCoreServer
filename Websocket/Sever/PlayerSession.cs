@@ -6,11 +6,11 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Websocket
+namespace WebSocket.Sever
 {
-    internal class GameSession : WssSession
+    internal class PlayerSession : WssSession
     {
-        public GameSession(WssServer server) : base(server)
+        public PlayerSession(WssServer server) : base(server)
         {
 
         }
@@ -20,7 +20,7 @@ namespace Websocket
             Console.WriteLine($"Chat WebSocket session with Id {Id} connected!");
 
             // Send invite message
-            string message = "Hello from WebSocket chat! Please send a message or '!' to disconnect the client!";
+            string message = "Hello from WebSocket! Please send a message or '!' to disconnect the client!";
             SendTextAsync(message);
         }
 

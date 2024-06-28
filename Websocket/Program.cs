@@ -3,7 +3,8 @@ using System.Net;
 using System.Net.Security;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
-namespace Websocket
+using WebSocket.Sever;
+namespace WebSocket
 {
     internal class Program
     {

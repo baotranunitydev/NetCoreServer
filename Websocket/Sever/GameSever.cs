@@ -7,7 +7,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Websocket
+namespace WebSocket.Sever
 {
     internal class GameSever : WssServer
     {
@@ -18,7 +18,7 @@ namespace Websocket
 
         protected override SslSession CreateSession()
         {
-            return new GameSession(this);
+            return new PlayerSession(this);
         }
 
         protected override void OnError(SocketError error)
