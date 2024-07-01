@@ -25,13 +25,18 @@ namespace WebSocket.Player
         public bool TryAddPlayerSessionToDic(PlayerSession playerSession)
         {
             var isCanAdd = false;
-            if (dicPlayerSeesion.Count < 1000)
+            if (dicPlayerSeesion.Count < maxPlayerSessionInSever)
             {
                 isCanAdd = true;
                 var playerSessionModel = playerSession.GetPlayerSessionModel();
                 var isContain = dicPlayerSeesion.ContainsKey(playerSessionModel.id);
                 if (!isContain)
                 {
+                    dicPlayerSeesion.Add(playerSessionModel.id, playerSession);
+                }
+                else
+                {
+                    dicPlayerSeesion[playerSessionModel.id].Close();
                     dicPlayerSeesion.Add(playerSessionModel.id, playerSession);
                 }
             }

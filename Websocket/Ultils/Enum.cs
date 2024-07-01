@@ -17,6 +17,7 @@ namespace WebSocket.Ultils
         ChangePriceRoom,
         ChangeStatusReady,
         QuitRoom,
+        OnDisconnect,
     }
 
     internal enum TypeStateRoom

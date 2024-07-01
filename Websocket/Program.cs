@@ -15,13 +15,13 @@ namespace WebSocket
             if (args.Length > 0)
                 port = int.Parse(args[0]);
             // WebSocket server content path
-            string www = "../../../../www/wss";
-            if (args.Length > 1)
-                www = args[1];
+            //string www = "../../../../www/wss";
+            //if (args.Length > 1)
+            //    www = args[1];
 
             Console.WriteLine($"WebSocket server port: {port}");
-            Console.WriteLine($"WebSocket server static content path: {www}");
-            Console.WriteLine($"WebSocket server website: https://localhost:{port}/game/index.html");
+            //Console.WriteLine($"WebSocket server static content path: {www}");
+            //Console.WriteLine($"WebSocket server website: https://localhost:{port}/game/index.html");
 
             Console.WriteLine();
 
@@ -30,7 +30,7 @@ namespace WebSocket
 
             // Create a new WebSocket server
             var server = new GameSever(context, IPAddress.Any, port);
-            server.AddStaticContent(www, "/game");
+            //server.AddStaticContent(www, "/game");
             server.InitSever();
             // Start the server
             Console.Write("Server starting...");

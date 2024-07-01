@@ -22,6 +22,7 @@ namespace WebSocket.Sever
         public void InitSever()
         {
             playerSessionManager = new PlayerSessionManager();
+            playerSessionManager.SetMaxPlayerSessionInSever(maxPlayerInSever);
             roomManager = new RoomManager();
         }
 
@@ -62,6 +63,9 @@ namespace WebSocket.Sever
                     case TypeMessage.ChangeStatusReady:
                         break;
                     case TypeMessage.QuitRoom:
+                        break;
+                    case TypeMessage.OnDisconnect:
+                        OnDisconnected(playerSession, message, out response);
                         break;
                 }
                 playerSession.SendBinary(response);
@@ -106,6 +110,18 @@ namespace WebSocket.Sever
         {
             var playerSessionModel = JsonConvert.DeserializeObject<PlayerSessionModel>(message.message);
             playerSession.SetPlayerSessionModel(playerSessionModel);
+            var jsonPlayerSessionModel = JsonConvert.SerializeObject(playerSession.GetPlayerSessionModel());
+            response = jsonPlayerSessionModel;
+        }
+
+        private void OnDisconnected(PlayerSession playerSession, MessageData message, out string response)
+        {
+            if (playerSessionManager == null)
+            {
+                response = "";
+                return;
+            }
+            playerSessionManager.RemovePlayerSessionFormDics(message.message);
             var jsonPlayerSessionModel = JsonConvert.SerializeObject(playerSession.GetPlayerSessionModel());
             response = jsonPlayerSessionModel;
         }

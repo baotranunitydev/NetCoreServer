@@ -34,8 +34,22 @@ namespace WebSocket.Player
 
         public override void OnWsDisconnected()
         {
+            try
+            {
+                var messageData = new MessageData()
+                {
+                    typeMessage = TypeMessage.OnDisconnect,
+                    message = playerSessionModel.id,
+                };
+                (Server as GameSever)?.HandleMessageFromSession(this, messageData);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
             Console.WriteLine($"WebSocket session with Id {Id} disconnected!");
         }
+
 
         public override void OnWsReceived(byte[] buffer, long offset, long size)
         {
