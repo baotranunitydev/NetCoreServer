@@ -192,7 +192,7 @@ namespace NetCoreServer
                     // Shutdown the SSL stream
                     _sslStream.ShutdownAsync().Wait();
                 }
-                catch (Exception) {}
+                catch (Exception) { }
 
                 // Dispose the SSL stream & buffer
                 _sslStream.Dispose();
@@ -203,7 +203,7 @@ namespace NetCoreServer
                     // Shutdown the socket associated with the client
                     Socket.Shutdown(SocketShutdown.Both);
                 }
-                catch (SocketException) {}
+                catch (SocketException) { }
 
                 // Close the session socket
                 Socket.Close();
@@ -214,7 +214,7 @@ namespace NetCoreServer
                 // Update the session socket disposed flag
                 IsSocketDisposed = true;
             }
-            catch (ObjectDisposedException) {}
+            catch (ObjectDisposedException) { }
 
             // Update the handshaked flag
             IsHandshaked = false;
@@ -487,7 +487,7 @@ namespace NetCoreServer
                     result = _sslStream.BeginRead(_receiveBuffer.Data, 0, (int)_receiveBuffer.Capacity, ProcessReceive, _sslStreamId);
                 } while (result.CompletedSynchronously);
             }
-            catch (ObjectDisposedException) {}
+            catch (ObjectDisposedException) { }
         }
 
         /// <summary>
@@ -539,7 +539,7 @@ namespace NetCoreServer
                 // Async write with the write handler
                 _sslStream.BeginWrite(_sendBufferFlush.Data, (int)_sendBufferFlushOffset, (int)(_sendBufferFlush.Size - _sendBufferFlushOffset), ProcessSend, _sslStreamId);
             }
-            catch (ObjectDisposedException) {}
+            catch (ObjectDisposedException) { }
         }
 
         /// <summary>
@@ -552,7 +552,7 @@ namespace NetCoreServer
                 // Clear send buffers
                 _sendBufferMain.Clear();
                 _sendBufferFlush.Clear();
-                _sendBufferFlushOffset= 0;
+                _sendBufferFlushOffset = 0;
 
                 // Update statistic
                 BytesPending = 0;
@@ -730,27 +730,27 @@ namespace NetCoreServer
         /// <summary>
         /// Handle client connecting notification
         /// </summary>
-        protected virtual void OnConnecting() {}
+        protected virtual void OnConnecting() { }
         /// <summary>
         /// Handle client connected notification
         /// </summary>
-        protected virtual void OnConnected() {}
+        protected virtual void OnConnected() { }
         /// <summary>
         /// Handle client handshaking notification
         /// </summary>
-        protected virtual void OnHandshaking() {}
+        protected virtual void OnHandshaking() { }
         /// <summary>
         /// Handle client handshaked notification
         /// </summary>
-        protected virtual void OnHandshaked() {}
+        protected virtual void OnHandshaked() { }
         /// <summary>
         /// Handle client disconnecting notification
         /// </summary>
-        protected virtual void OnDisconnecting() {}
+        protected virtual void OnDisconnecting() { }
         /// <summary>
         /// Handle client disconnected notification
         /// </summary>
-        protected virtual void OnDisconnected() {}
+        protected virtual void OnDisconnected() { }
 
         /// <summary>
         /// Handle buffer received notification
@@ -761,7 +761,7 @@ namespace NetCoreServer
         /// <remarks>
         /// Notification is called when another part of buffer was received from the client
         /// </remarks>
-        protected virtual void OnReceived(byte[] buffer, long offset, long size) {}
+        protected virtual void OnReceived(byte[] buffer, long offset, long size) { }
         /// <summary>
         /// Handle buffer sent notification
         /// </summary>
@@ -771,7 +771,7 @@ namespace NetCoreServer
         /// Notification is called when another part of buffer was sent to the client.
         /// This handler could be used to send another buffer to the client for instance when the pending size is zero.
         /// </remarks>
-        protected virtual void OnSent(long sent, long pending) {}
+        protected virtual void OnSent(long sent, long pending) { }
 
         /// <summary>
         /// Handle empty send buffer notification
@@ -780,13 +780,13 @@ namespace NetCoreServer
         /// Notification is called when the send buffer is empty and ready for a new data to send.
         /// This handler could be used to send another buffer to the client.
         /// </remarks>
-        protected virtual void OnEmpty() {}
+        protected virtual void OnEmpty() { }
 
         /// <summary>
         /// Handle error notification
         /// </summary>
         /// <param name="error">Socket error code</param>
-        protected virtual void OnError(SocketError error) {}
+        protected virtual void OnError(SocketError error) { }
 
         #endregion
 

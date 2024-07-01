@@ -31,7 +31,7 @@ namespace WebSocket
             // Create a new WebSocket server
             var server = new GameSever(context, IPAddress.Any, port);
             server.AddStaticContent(www, "/game");
-
+            server.InitSever();
             // Start the server
             Console.Write("Server starting...");
             server.Start();
@@ -42,7 +42,7 @@ namespace WebSocket
             // Perform text input
             for (; ; )
             {
-                string line = Console.ReadLine();
+                string? line = Console.ReadLine();
                 if (string.IsNullOrEmpty(line))
                     break;
 

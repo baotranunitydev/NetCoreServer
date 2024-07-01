@@ -6,14 +6,39 @@ using System.Threading.Tasks;
 
 namespace WebSocket.Ultils
 {
-    public enum TypeMessage
+    internal enum TypeMessage
     {
         None,
+        ConnectWebSocket,
+        GetUserModel,
+        UpdateModel,
         CreateRoom,
-        JoinRoom,
         FindRoom,
         ChangePriceRoom,
         ChangeStatusReady,
         QuitRoom,
+    }
+
+    internal enum TypeStateRoom
+    {
+        None,
+        Wait,
+        Play,
+    }
+
+    internal enum TypeStatePlayer
+    {
+        None,
+        Idle,
+        InRoom,
+        Ready,
+        Play
+    }
+
+    internal enum TypePlayerInRoom
+    {
+        None,
+        Owner,
+        Other,
     }
 }
