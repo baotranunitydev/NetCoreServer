@@ -10,8 +10,8 @@ namespace WebSocket.Sever
 {
     internal class GameSever : WssServer
     {
-        private PlayerSessionManager playerSessionManager;
-        private RoomManager roomManager;
+        private PlayerSessionManager? playerSessionManager;
+        private RoomManager? roomManager;
         private int maxPlayerInSever = 1000;
 
         public GameSever(SslContext context, IPAddress address, int port) : base(context, address, port)
@@ -79,6 +79,11 @@ namespace WebSocket.Sever
 
         private void OnTryAddPlayerSessionToDic(PlayerSession playerSession, out string response)
         {
+            if (playerSessionManager == null)
+            {
+                response = "Error";
+                return;
+            };
             var isCanAdd = playerSessionManager.TryAddPlayerSessionToDic(playerSession);
             if (isCanAdd)
             {
