@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -57,29 +58,17 @@ namespace WebSocket.Room
 
         public bool IsCanPlay()
         {
-            var isMaxPlayer = AmountMemeberInRoom() == roomModel.maxMember;
+            var isMaxPlayer = roomModel.amountMemember == roomModel.maxMember;
             var isOwnerReady = roomModel.owner.statePlayer == TypeStatePlayer.Ready;
             var isAllOthersReady = roomModel.lstPlayerOther.TrueForAll(player => player.statePlayer == TypeStatePlayer.Ready);
             var isCanPlay = isOwnerReady && isAllOthersReady && isMaxPlayer;
             return isCanPlay;
         }
 
-        public int AmountMemeberInRoom()
-        {
-            var amountMember = 0;
-            if (!string.IsNullOrEmpty(roomModel.owner.name))
-            {
-                amountMember++;
-            }
-            amountMember += roomModel.lstPlayerOther.Count();
-            return amountMember;
-        }
-
         public bool TryAddMemberInRoom(PlayerSessionModel playerSessionModel)
         {
             var canAdd = false;
-            var amount = AmountMemeberInRoom();
-            if (amount < roomModel.maxMember)
+            if (roomModel.amountMemember < roomModel.maxMember)
             {
                 var isContain = roomModel.lstPlayerOther.Contains(playerSessionModel);
                 if (!isContain)
@@ -87,6 +76,11 @@ namespace WebSocket.Room
                     roomModel.lstPlayerOther.Add(playerSessionModel);
                 }
                 canAdd = true;
+                roomModel.amountMemember++;
+            }
+            else
+            {
+
             }
             return canAdd;
         }
@@ -94,8 +88,7 @@ namespace WebSocket.Room
         public bool TryRemovePlayer(PlayerSessionModel playerSessionModel)
         {
             var canRemove = false;
-            var totalMemeber = AmountMemeberInRoom();
-            if (totalMemeber > 1)
+            if (roomModel.amountMemember > 1)
             {
                 canRemove = true;
                 if (playerSessionModel.id == roomModel.owner.id)
@@ -119,6 +112,7 @@ namespace WebSocket.Room
                 {
                     roomModel.lstPlayerOther.Remove(playerSessionModel);
                 }
+                roomModel.amountMemember--;
             }
             else
             {
@@ -132,6 +126,11 @@ namespace WebSocket.Room
             var isHavePassword = roomModel.password >= 0;
             return isHavePassword;
         }
+
+        public void DebugModelRoom(out string jsonRoomModel)
+        {
+            jsonRoomModel = JsonConvert.SerializeObject(roomModel);
+        }
     }
 
     internal struct RoomModel
@@ -141,6 +140,7 @@ namespace WebSocket.Room
         public int id;
         public int priceRoom;
         public int maxMember;
+        public int amountMemember;
         public int password;
         public PlayerSessionModel owner;
         public List<PlayerSessionModel> lstPlayerOther;

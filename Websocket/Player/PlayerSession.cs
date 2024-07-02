@@ -71,7 +71,7 @@ namespace WebSocket.Player
         }
     }
 
-    internal struct PlayerSessionModel
+    public struct PlayerSessionModel
     {
         public TypeStatePlayer statePlayer;
         public string name;

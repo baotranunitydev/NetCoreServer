@@ -25,42 +25,49 @@ namespace WebSocket.Room
             return dicsRoomFilter;
         }
 
-        public void OnCreateRoom(string roomName, int password, int priceRoom, PlayerSessionModel playerSessionModel)
+
+
+
+        public void OnCreateRoom(CreateRoomRequest createRoomRequest)
         {
             var room = new Room();
             var roomModel = new RoomModel()
             {
-                name = roomName,
+                name = createRoomRequest.roomName,
                 id = RoomIDGenerator.GenerateRoomID(),
-                priceRoom = priceRoom,
-                owner = playerSessionModel,
-                password = password,
+                priceRoom = createRoomRequest.priceRoom,
+                owner = createRoomRequest.playerSessionModel,
+                password = createRoomRequest.password,
                 maxMember = 2,
                 stateRoom = TypeStateRoom.Wait,
+                amountMemember = 1,
                 lstPlayerOther = new List<PlayerSessionModel>()
             };
             room.SetRoomModel(roomModel);
             AddRoomToDics(roomModel.id, room);
+            room.DebugModelRoom(out string jsonRoomModel);
+            Console.WriteLine($"Model: \n{jsonRoomModel}");
         }
 
-        public void OnFindRoom(int roomId, PlayerSessionModel playerSessionModel)
+        public void OnFindRoom(FindRoomRequest findRoomRequest)
         {
-            var room = GetRoomById(roomId);
+            var room = GetRoomById(findRoomRequest.roomId);
             if (room != null)
             {
                 if (room.IsHavePassword())
                 {
-                    Console.WriteLine($"Room Id: {roomId} - Have password");
+                    Console.WriteLine($"Room Id: {findRoomRequest.roomId} - Have password");
                     return;
                 }
-                OnJoinRoom(roomId, playerSessionModel, room);
+                OnJoinRoom(findRoomRequest.roomId, findRoomRequest.playerSessionModel, room);
+                room.DebugModelRoom(out string jsonRoomModel);
+                Console.WriteLine($"Model: \n{jsonRoomModel}");
             }
             else
             {
-                Console.WriteLine($"Room not found {roomId}");
+                Console.WriteLine($"Room not found {findRoomRequest.roomId}");
             }
         }
-
 
         private void OnJoinRoom(int roomId, PlayerSessionModel playerSessionModel, Room room)
         {
@@ -68,6 +75,8 @@ namespace WebSocket.Room
             if (isSuccess)
             {
                 Console.WriteLine($"Player Id Join room: {playerSessionModel.id} - Room Id: {roomId}");
+                room.DebugModelRoom(out string jsonRoomModel);
+                Console.WriteLine($"Model: \n{jsonRoomModel}");
             }
             else
             {
@@ -76,53 +85,61 @@ namespace WebSocket.Room
                     case TypeStateRoom.None:
                         break;
                     case TypeStateRoom.Wait:
+                        break;
+                    case TypeStateRoom.Full:
                         Console.WriteLine($"Room Id: {roomId} - Full");
                         break;
                     case TypeStateRoom.Play:
                         Console.WriteLine($"Room Id: {roomId} - IsPlay");
                         break;
                 }
+                room.DebugModelRoom(out string jsonRoomModel);
+                Console.WriteLine($"Model: \n{jsonRoomModel}");
             }
         }
 
-        public void OnJoinRoomWithPassword(int roomId, int password, PlayerSessionModel playerSessionModel)
+        public void OnJoinRoomWithPassword(JoinRoomPassowrdRequest joinRoomPassowrdRequest)
         {
-            var room = GetRoomById(roomId);
+            var room = GetRoomById(joinRoomPassowrdRequest.roomId);
             if (room != null)
             {
-                if (room.GetRoomModel().password != password)
+                if (room.GetRoomModel().password != joinRoomPassowrdRequest.password)
                 {
-                    Console.WriteLine($"Room Id: {roomId} - Password error");
+                    Console.WriteLine($"Room Id: {joinRoomPassowrdRequest.roomId} - Password error");
                     return;
                 }
-                OnJoinRoom(roomId, playerSessionModel, room);
+                OnJoinRoom(joinRoomPassowrdRequest.roomId, joinRoomPassowrdRequest.playerSessionModel, room);
             }
             else
             {
-                Console.WriteLine($"Room not found {roomId}");
+                Console.WriteLine($"Room not found {joinRoomPassowrdRequest.roomId}");
             }
         }
 
-        public void OnChangeStatusPlayer(int roomId, PlayerSessionModel playerSessionModel)
+        public void OnChangeStatusPlayer(ChangeStatusRequest changeStatusRequest)
         {
-            var room = GetRoomById(roomId);
+            var room = GetRoomById(changeStatusRequest.roomId);
             if (room != null)
             {
-                room.ChangeStatusPlayer(playerSessionModel);
+                room.ChangeStatusPlayer(changeStatusRequest.playerSessionModel);
                 room.CheckPlay();
+                room.DebugModelRoom(out string jsonRoomModel);
+                Console.WriteLine($"Model: \n{jsonRoomModel}");
             }
             else
             {
-                Console.WriteLine($"Room not found {roomId}");
+                Console.WriteLine($"Room not found {changeStatusRequest.roomId}");
             }
         }
 
-        public void OnChangePriceRoom(int roomId, int priceRoom)
+
+
+        public void OnChangePriceRoom(ChangePriceRoomRequest changePriceRoomRequest)
         {
-            var room = GetRoomById(roomId);
+            var room = GetRoomById(changePriceRoomRequest.roomId);
             if (room != null)
             {
-                var canChange = room.TryChangePriceRoom(priceRoom);
+                var canChange = room.TryChangePriceRoom(changePriceRoomRequest.priceRoom);
                 if (canChange)
                 {
                     Console.WriteLine($"Channge Done");
@@ -131,31 +148,36 @@ namespace WebSocket.Room
                 {
                     Console.WriteLine($"Not enough point to change price");
                 }
+                room.DebugModelRoom(out string jsonRoomModel);
+                Console.WriteLine($"Model: \n{jsonRoomModel}");
             }
             else
             {
-                Console.WriteLine($"Room not found {roomId}");
+                Console.WriteLine($"Room not found {changePriceRoomRequest.roomId}");
             }
         }
 
-        public void OnPlayerQuitRoom(int roomId, PlayerSessionModel playerSessionModel)
+
+        public void OnPlayerQuitRoom(PlayerQuitRoomRequest playerQuitRoomRequest)
         {
-            var room = GetRoomById(roomId);
+            var room = GetRoomById(playerQuitRoomRequest.roomId);
             if (room != null)
             {
-                var isRemovePlayer = room.TryRemovePlayer(playerSessionModel);
+                var isRemovePlayer = room.TryRemovePlayer(playerQuitRoomRequest.playerSessionModel);
                 if (isRemovePlayer)
                 {
                     Console.WriteLine($"Channge Done");
+                    room.DebugModelRoom(out string jsonRoomModel);
+                    Console.WriteLine($"Model: \n{jsonRoomModel}");
                 }
                 else
                 {
-                    RemoveRoomFormDics(roomId);
+                    RemoveRoomFormDics(playerQuitRoomRequest.roomId);
                 }
             }
             else
             {
-                Console.WriteLine($"Room not found {roomId}");
+                Console.WriteLine($"Room not found {playerQuitRoomRequest.roomId}");
             }
         }
 

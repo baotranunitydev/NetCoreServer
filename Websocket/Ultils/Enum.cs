@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WebSocket.Ultils
 {
-    internal enum TypeMessage
+    public enum TypeMessage
     {
         None,
         ConnectWebSocket,
@@ -20,14 +20,15 @@ namespace WebSocket.Ultils
         OnDisconnect,
     }
 
-    internal enum TypeStateRoom
+    public enum TypeStateRoom
     {
         None,
         Wait,
+        Full,
         Play,
     }
 
-    internal enum TypeStatePlayer
+    public enum TypeStatePlayer
     {
         None,
         Idle,
@@ -36,7 +37,7 @@ namespace WebSocket.Ultils
         Play
     }
 
-    internal enum TypePlayerInRoom
+    public enum TypePlayerInRoom
     {
         None,
         Owner,
