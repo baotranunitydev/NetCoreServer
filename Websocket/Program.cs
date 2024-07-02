@@ -59,10 +59,10 @@ namespace WebSocket
                 server.MulticastText(line);
             }
 
-            // Stop the server
-            Console.Write("Server stopping...");
-            server.Stop();
-            Console.WriteLine("Done!");
+            //// Stop the server
+            //Console.Write("Server stopping...");
+            //server.Stop();
+            //Console.WriteLine("Done!");
         }
     }
 }

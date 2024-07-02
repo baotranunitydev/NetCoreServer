@@ -6,18 +6,36 @@ using System.Threading.Tasks;
 
 namespace WebSocket.Ultils
 {
-    public enum TypeMessage
+    public enum TypeRequest
     {
         None,
+        //Player
         ConnectWebSocket,
         GetUserModel,
         UpdateModel,
+        //Room
         CreateRoom,
         FindRoom,
         ChangePriceRoom,
         ChangeStatusReady,
+        JoinRoomWithPassword,
         QuitRoom,
         OnDisconnect,
+    }
+
+    public enum TypeResponse
+    {
+        None,
+        Success,
+        // Player
+        SeverMax,
+        Have2PlayerId,
+        // Room
+        RoomFull,
+        RoomNotExist,
+        EnterPassword,
+        PasswordError,
+        NotEnoughPointToJoin,
     }
 
     public enum TypeStateRoom
@@ -32,15 +50,7 @@ namespace WebSocket.Ultils
     {
         None,
         Idle,
-        InRoom,
         Ready,
-        Play
-    }
-
-    public enum TypePlayerInRoom
-    {
-        None,
-        Owner,
-        Other,
+        Play,
     }
 }

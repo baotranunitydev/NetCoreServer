@@ -65,24 +65,31 @@ namespace WebSocket.Room
             return isCanPlay;
         }
 
-        public bool TryAddMemberInRoom(PlayerSessionModel playerSessionModel)
+        public TypeResponse TryAddMemberInRoom(PlayerSessionModel playerSessionModel)
         {
-            var canAdd = false;
+            var typeRoomResponse = TypeResponse.None;
             if (roomModel.amountMemember < roomModel.maxMember)
             {
-                var isContain = roomModel.lstPlayerOther.Contains(playerSessionModel);
-                if (!isContain)
+                if (playerSessionModel.point >= roomModel.priceRoom)
                 {
-                    roomModel.lstPlayerOther.Add(playerSessionModel);
+                    var isContain = roomModel.lstPlayerOther.Contains(playerSessionModel);
+                    if (!isContain)
+                    {
+                        roomModel.lstPlayerOther.Add(playerSessionModel);
+                    }
+                    typeRoomResponse = TypeResponse.Success;
+                    roomModel.amountMemember++;
                 }
-                canAdd = true;
-                roomModel.amountMemember++;
+                else
+                {
+                    typeRoomResponse = TypeResponse.NotEnoughPointToJoin;
+                }
             }
             else
             {
-
+                typeRoomResponse = TypeResponse.RoomFull;
             }
-            return canAdd;
+            return typeRoomResponse;
         }
 
         public bool TryRemovePlayer(PlayerSessionModel playerSessionModel)

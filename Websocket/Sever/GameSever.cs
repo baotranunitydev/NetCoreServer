@@ -26,6 +26,12 @@ namespace WebSocket.Sever
             roomManager = new RoomManager();
         }
 
+        protected override void OnStarted()
+        {
+            base.OnStarted();
+            Console.WriteLine("Start Sever");
+        }
+
         protected override SslSession CreateSession()
         {
             return new PlayerSession(this);
@@ -36,39 +42,41 @@ namespace WebSocket.Sever
             Console.WriteLine($"WebSocket server caught an error with code {error}");
         }
 
-        public void HandleMessageFromSession(PlayerSession playerSession, MessageData message)
+        public void HandleMessageFromSession(PlayerSession playerSession, SeverRequest message)
         {
             try
             {
                 var response = "";
                 switch (message.typeMessage)
                 {
-                    case TypeMessage.None:
+                    case TypeRequest.None:
                         break;
-                    case TypeMessage.ConnectWebSocket:
-                        OnTryAddPlayerSessionToDic(playerSession, out response);
-                        break;
-                    case TypeMessage.GetUserModel:
-                        OnGetPlayerSessionModel(playerSession, out response);
-                        break;
-                    case TypeMessage.UpdateModel:
+                    case TypeRequest.UpdateModel:
                         OnUpdatePlayerSessionModel(playerSession, message, out response);
                         break;
-                    case TypeMessage.CreateRoom:
+                    case TypeRequest.ConnectWebSocket:
+                        OnTryAddPlayerSessionToDic(playerSession, out response);
                         break;
-                    case TypeMessage.FindRoom:
+                    case TypeRequest.GetUserModel:
+                        OnGetPlayerSessionModel(playerSession, out response);
                         break;
-                    case TypeMessage.ChangePriceRoom:
+                    case TypeRequest.CreateRoom:
                         break;
-                    case TypeMessage.ChangeStatusReady:
+                    case TypeRequest.FindRoom:
                         break;
-                    case TypeMessage.QuitRoom:
+                    case TypeRequest.JoinRoomWithPassword:
                         break;
-                    case TypeMessage.OnDisconnect:
+                    case TypeRequest.ChangePriceRoom:
+                        break;
+                    case TypeRequest.ChangeStatusReady:
+                        break;
+                    case TypeRequest.QuitRoom:
+                        break;
+                    case TypeRequest.OnDisconnect:
                         OnDisconnected(playerSession, message, out response);
                         break;
                 }
-                playerSession.SendBinary(response);
+                playerSession.SendAsync(response);
                 var jsonMessage = JsonConvert.SerializeObject(message);
                 Console.WriteLine($"--------------------------");
                 Console.WriteLine($"Session - {playerSession.Id} - TypeMessage: {message.typeMessage}");
@@ -106,7 +114,7 @@ namespace WebSocket.Sever
             response = jsonPlayerSessionModel;
         }
 
-        private void OnUpdatePlayerSessionModel(PlayerSession playerSession, MessageData message, out string response)
+        private void OnUpdatePlayerSessionModel(PlayerSession playerSession, SeverRequest message, out string response)
         {
             var playerSessionModel = JsonConvert.DeserializeObject<PlayerSessionModel>(message.message);
             playerSession.SetPlayerSessionModel(playerSessionModel);
@@ -114,22 +122,24 @@ namespace WebSocket.Sever
             response = jsonPlayerSessionModel;
         }
 
-        private void OnDisconnected(PlayerSession playerSession, MessageData message, out string response)
+        private void OnDisconnected(PlayerSession playerSession, SeverRequest message, out string response)
         {
-            if (playerSessionManager == null)
+            response = "";
+            try
             {
-                response = "";
-                return;
+                if (playerSessionManager == null || message.message == null)
+                {
+                    return;
+                }
+                var playerSessionModel = JsonConvert.DeserializeObject<PlayerSessionModel>(message.message);
+                playerSessionManager.RemovePlayerSessionFormDics(playerSessionModel.id);
+                var jsonPlayerSessionModel = JsonConvert.SerializeObject(playerSession.GetPlayerSessionModel());
+                response = jsonPlayerSessionModel;
             }
-            playerSessionManager.RemovePlayerSessionFormDics(message.message);
-            var jsonPlayerSessionModel = JsonConvert.SerializeObject(playerSession.GetPlayerSessionModel());
-            response = jsonPlayerSessionModel;
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
-    }
-
-    internal struct MessageData
-    {
-        public TypeMessage typeMessage;
-        public string message;
     }
 }

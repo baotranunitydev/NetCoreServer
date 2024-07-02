@@ -20,7 +20,6 @@ namespace WebSocket.Player
 
         public PlayerSession(WssServer server) : base(server)
         {
-
         }
 
         public override void OnWsConnected(HttpRequest request)
@@ -36,12 +35,13 @@ namespace WebSocket.Player
         {
             try
             {
-                var messageData = new MessageData()
+                var messageData = new SeverRequest()
                 {
-                    typeMessage = TypeMessage.OnDisconnect,
+                    typeMessage = TypeRequest.OnDisconnect,
                     message = playerSessionModel.id,
                 };
                 (Server as GameSever)?.HandleMessageFromSession(this, messageData);
+                base.OnWsDisconnecting();
             }
             catch (Exception ex)
             {
@@ -50,13 +50,13 @@ namespace WebSocket.Player
             Console.WriteLine($"WebSocket session with Id {Id} disconnected!");
         }
 
-
         public override void OnWsReceived(byte[] buffer, long offset, long size)
         {
+            if(size == 0) { Console.WriteLine("is disconnected"); }
             try
             {
                 string message = Encoding.UTF8.GetString(buffer, (int)offset, (int)size);
-                var messageData = JsonConvert.DeserializeObject<MessageData>(message);
+                var messageData = JsonConvert.DeserializeObject<SeverRequest>(message);
                 (Server as GameSever)?.HandleMessageFromSession(this, messageData);
             }
             catch (Exception ex)
@@ -77,5 +77,6 @@ namespace WebSocket.Player
         public string name;
         public string id;
         public long point;
+        //Avt
     }
 }

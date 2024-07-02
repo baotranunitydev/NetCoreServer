@@ -26,8 +26,6 @@ namespace WebSocket.Room
         }
 
 
-
-
         public void OnCreateRoom(CreateRoomRequest createRoomRequest)
         {
             var room = new Room();
@@ -71,31 +69,26 @@ namespace WebSocket.Room
 
         private void OnJoinRoom(int roomId, PlayerSessionModel playerSessionModel, Room room)
         {
-            var isSuccess = room.TryAddMemberInRoom(playerSessionModel);
-            if (isSuccess)
+            var response = room.TryAddMemberInRoom(playerSessionModel);
+            switch (response)
             {
-                Console.WriteLine($"Player Id Join room: {playerSessionModel.id} - Room Id: {roomId}");
-                room.DebugModelRoom(out string jsonRoomModel);
-                Console.WriteLine($"Model: \n{jsonRoomModel}");
+                case TypeResponse.None:
+                    break;
+                case TypeResponse.Success:
+                    break;
+                case TypeResponse.NotEnoughPointToJoin:
+                    break;
+                case TypeResponse.RoomNotExist:
+                    break;
+                case TypeResponse.PasswordError:
+                    break;
+                case TypeResponse.RoomFull:
+                    break;
+                default:
+                    break;
             }
-            else
-            {
-                switch (room.GetRoomModel().stateRoom)
-                {
-                    case TypeStateRoom.None:
-                        break;
-                    case TypeStateRoom.Wait:
-                        break;
-                    case TypeStateRoom.Full:
-                        Console.WriteLine($"Room Id: {roomId} - Full");
-                        break;
-                    case TypeStateRoom.Play:
-                        Console.WriteLine($"Room Id: {roomId} - IsPlay");
-                        break;
-                }
-                room.DebugModelRoom(out string jsonRoomModel);
-                Console.WriteLine($"Model: \n{jsonRoomModel}");
-            }
+            room.DebugModelRoom(out string jsonRoomModel);
+            Console.WriteLine($"Model: \n{jsonRoomModel}");
         }
 
         public void OnJoinRoomWithPassword(JoinRoomPassowrdRequest joinRoomPassowrdRequest)
